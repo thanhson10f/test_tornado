@@ -19,7 +19,7 @@ class GetHandler(RequestHandler):
         result = yield client.call("PUBLISH","channel1",mess)
         print mess 
         if not isinstance(result,tornadis.TornadisException):
-            self.write("post: %s" % mess)        
+            self.write("posted:%s" % mess)        
         self.finish()
 
 
