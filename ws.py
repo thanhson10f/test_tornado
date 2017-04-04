@@ -12,16 +12,18 @@ class GetHandler(RequestHandler):
     @tornado.gen.coroutine
     def get(self):
         self.render("websocket.html")
+        
+
+class BiddingHandler(RequestHandler):
 
     @tornado.gen.coroutine
-    def post(self):
-        mess = self.get_argument("mess",None)
-        result = yield client.call("PUBLISH","channel1",mess)
-        print mess 
+    def put(self, id):
+        price = self.get_argument("price", None)
+        result = yield client.call("PUBLISH","item:%s"id,price)
+        print  "item:%s was bid %s" % (id,price)
         if not isinstance(result,tornadis.TornadisException):
-            self.write("Posted :%s" % mess)        
+            self.write("Bid :%s" % price)        
         self.finish()
-
 
 class WSHandler(WebSocketHandler):
 
@@ -29,7 +31,7 @@ class WSHandler(WebSocketHandler):
     def initialize(self):
         self.redis = tornadis.PubSubClient(autoconnect=False)
         yield self.redis.connect()
-        result = yield self.redis.pubsub_subscribe("channel1")
+        result = yield self.redis.pubsub_psubscribe("item:*")
         print result
         loop = tornado.ioloop.IOLoop.current()
         loop.add_callback(self.watch_redis)
@@ -59,6 +61,7 @@ class WSHandler(WebSocketHandler):
 
 app = Application([
     url(r"/", GetHandler),
+    url(r"/bid/([0-9]+)", BiddingHandler),
     url(r"/ws", WSHandler)
 ])
 
