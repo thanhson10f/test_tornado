@@ -18,8 +18,9 @@ class BiddingHandler(RequestHandler):
 
     @tornado.gen.coroutine
     def put(self, id):
+        print "id: %s" % id
         price = self.get_argument("price", None)
-        result = yield client.call("PUBLISH","item:%s"id,price)
+        result = yield client.call("PUBLISH","item:%s"%id,price)
         print  "item:%s was bid %s" % (id,price)
         if not isinstance(result,tornadis.TornadisException):
             self.write("Bid :%s" % price)        

@@ -7,13 +7,7 @@
   crossorigin="anonymous"></script>
 </head>
 <body>
-<h1>WebSocket example</h1>
-<input type="text" id="price"/><input type="button" value="Bid" onclick="sendMess()" id="bid_button"/>
-<p>
-Use redis-cli to push data to the 'ws-queue' list:
-<pre>
-  redis-cli&gt; LPUSH ws-queue foo
-</pre>
+<input type="text" id="price"/><input type="button" value="Bid" id="bid_button"/>
 The data should then show up up below:
 </p>
 <pre id="container">
@@ -38,11 +32,11 @@ ws.send(mess);
 $(document).ready(function(){
   $('#bid_button').click(function(){
     $.ajax({
-      url: ip_host+":8888/bid/1",
+      url: "http://"+ip_host+":8888/bid/1",
       type: "PUT",
       data: {'price': $('#price').val()},
       success: function(result){
-        alert(result);
+        console.log(result);
       }
     })
   });
